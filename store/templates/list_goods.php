@@ -1,0 +1,7 @@
+<tr bgcolor="#FFFFFF">
+<td>#name#</td>
+<td><div align="center">#measure#</div></td>
+<td><div align="center">#qty#</div></td>
+<td><div align="center">#price#</div></td>
+<td width="290" align="right"><a href="javascript:win_open('goods_in&goods=#id#', '400', '500')"><img src="/themes/store/images/icons/add.gif" width="16" height="15"></a><a href="javascript:win_open('goods_out&goods=#id#', '400', '500')"><img src="/themes/store/images/icons/sub.gif" width="16" height="15"></a><a href="javascript:win_open('cart_add&goods=#id#', '300', '200')"><img src="/themes/store/images/icons/basket.gif" width="19" height="15"></a><a href="javascript:win_open('goods_edit&goods=#id#', '400', '500')"><img src="/themes/store/images/icons/edit.gif" width="16" height="15"></a><a href="javascript:win_open('goods_sort&goods=#id#', '300', '100')"><img src="/themes/store/images/icons/sort.gif" width="15" height="15"></a>{{if:commentary:<a href="javascript:win_open('goods_comment_view&goods=#id#', '300', '200')"><img src="/themes/store/images/icons/comment.gif" width="14" height="15"></a>}}<a href="javascript:win_open('goods_del&goods=#id#', '400', '300')"><img src="/themes/store/images/icons/del.gif" width="14" height="15"></a></td>
+</tr>

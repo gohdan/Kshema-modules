@@ -1,0 +1,1 @@
+<li><a href="/index.php?module=store&action=archive_view_by_date&date=#date#">#date#</a></li>
