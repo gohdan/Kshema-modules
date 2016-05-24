@@ -126,6 +126,13 @@ function news_default_action()
 	if ("" != $config['news']['css'])
 		$config['template']['css'][] = $config['news']['css'];
 
+	$priv = new Privileges();
+	if (isset($_POST['do_del']) && $priv -> has ("news", "admin", "write"))
+	{
+		$sql_query = "DELETE FROM `ksh_news` WHERE `id` = '".mysql_real_escape_string($_POST['id'])."'";
+		exec_query($sql_query);
+	}
+
         if (isset($_GET['action']))
         {
                 debug ("*** action: ".$_GET['action']);
