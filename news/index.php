@@ -57,9 +57,13 @@ function news_frontpage()
     );
 	$i = 0;
 
-    if (1 == $user['id'])
+	$priv = new Privileges();
+
+    if ($priv -> has ("news", "admin", "write"))
     {
         debug ("user has admin rights");
+		$content['show_admin_link'] = "yes";
+
         if (isset($_POST['do_del']))
         {
             debug ("have news to delete");
@@ -67,11 +71,7 @@ function news_frontpage()
             $content['result'] .= "Новость успешно удалена";
         }
         else
-        {
             debug ("don't have news to delete");
-        }
-
-        $content['admin_link'] .= "<p><a href=\"/news/admin/\">Администрировать новости</a></p>";
     }
 
     $result = exec_query("SELECT * FROM ksh_news ORDER BY `date` DESC, `id` DESC LIMIT ".mysql_real_escape_string($config['news']['last_news_qty'])."");
@@ -83,20 +83,21 @@ function news_frontpage()
 			$content['news'][$i]['descr_image'] = stripslashes($row['descr_image']);
 		else $content['news'][$i]['descr_image'] = "";
 
-	$content['news'][$i]['id'] = stripslashes($row['id']);
-	$content['news'][$i]['name'] = stripslashes($row['name']);
+		$content['news'][$i]['id'] = stripslashes($row['id']);
+		$content['news'][$i]['name'] = stripslashes($row['name']);
         $content['news'][$i]['date'] = format_date(stripslashes($row['date']), "ru");
-	$content['news'][$i]['descr'] = stripslashes($row['descr']);
-	$content['news'][$i]['full_text'] = stripslashes($row['full_text']);
-	if ("" == $row['url'])
-		$content['news'][$i]['url'] = "	/news/view/".$row['id'].".html";
-	else
-		$content['news'][$i]['url'] = stripslashes($row['url']);
+		$content['news'][$i]['descr'] = stripslashes($row['descr']);
+		$content['news'][$i]['full_text'] = stripslashes($row['full_text']);
+		if ("" == $row['url'])
+			$content['news'][$i]['url'] = "	/news/view/".$row['id'].".html";
+		else
+			$content['news'][$i]['url'] = stripslashes($row['url']);
 
-
-        if (1 == $user['id'])
-            $content['news'][$i]['edit_link'] = "<a href=\"/news/edit/".$row['id']."\">Редактировать</a>&nbsp;<a href=\"/news/del/".$row['id']."\">Удалить</a>";
-        else $content['news'][$i]['edit_link'] = "";
+		if ($priv -> has("news", "admin", "write"))	
+		{
+			$content['news'][$i]['show_edit_link'] = "yes";
+			$content['news'][$i]['show_del_link'] = "yes";
+		}
 		$i++;
     }
     mysql_free_result($result);
@@ -222,6 +223,18 @@ function news_default_action()
 							$dbo -> elements_on_page = $config['news']['elements_on_page'];
 							$cnt = $dbo -> view_by_category($category);
 							$cnt['news'] = $cnt['elements'];
+
+							if ($priv -> has("news", "admin", "write"))	
+							{
+								$content['show_admin_link'] = "yes";
+								foreach($cnt['news'] as $k => $v)
+								{
+									$cnt['news'][$k]['show_edit_link'] = "yes";
+									$cnt['news'][$k]['show_del_link'] = "yes";
+								}
+
+							}
+
 		                    $content .= gen_content("news", "view_by_category", $cnt);		
 
                         break;

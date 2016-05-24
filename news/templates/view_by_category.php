@@ -1,6 +1,6 @@
 {{if:result:<p>#result#</p>}}
 
-{{if:admin_link:<p>#admin_link#</p>}}
+{{if:show_admin_link:<p><a href="/news/admin/">Администрировать новости</a></p>}}
 
 {{if:content:<p>#content#</p>}}
 

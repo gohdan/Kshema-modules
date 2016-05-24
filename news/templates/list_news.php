@@ -5,6 +5,7 @@
 </tr>
 <tr>
 <td colspan="3">
-	<span class="more">#edit_link#</span>
+{{if:show_edit_link:<span class="more"><a href="/news/edit/#id#/">редактировать</a></span>}}
+{{if:show_del_link:<span class="more"><a href="/news/del/#id#/">удалить</a></span>}}
 </td>
 </tr>
