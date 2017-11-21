@@ -23,32 +23,37 @@ function forms_install_tables()
 		$charset = " charset='utf8'";
 	}
 
-        $queries[] = "create table if not exists ksh_forms_categories (
-                id int auto_increment primary key,
-                name tinytext,
-				title tinytext
+	$cat = new Category();
+	$result =  $cat -> create_table("ksh_forms_categories");
+	$content['result'] .= $result['result'];
+
+	$priv = new Privileges();
+	$result =  $priv -> create_table("ksh_forms_privileges");
+	$content['result'] .= $result['result'];
+
+	$acc = new Access();
+	$result =  $acc -> create_table("ksh_forms_access");
+	$content['result'] .= $result['result'];
+
+        $queries[] = "CREATE TABLE IF NOT EXISTS `ksh_forms` (
+                `id` int auto_increment primary key,
+                `name` tinytext,
+				`title` tinytext,
+                `flds_names` text,
+                `flds_descrs` text,
+                `category` int,
+                `template` text
         )".$charset;
 
 
-        $queries[] = "create table if not exists ksh_forms (
-                id int auto_increment primary key,
-                name tinytext,
-				title tinytext,
-                flds_names text,
-                flds_descrs text,
-                category int,
-                template text
-        )".$charset;
-
-
-        $queries[] = "create table if not exists ksh_forms_submitted (
-        	id int auto_increment primary key,
-			type int,
-            name tinytext,
-            flds text,
-            vls text,
-            date date,
-            time time
+        $queries[] = "CREATE TABLE IF NOT EXISTS `ksh_forms_submitted` (
+        	`id` int auto_increment primary key,
+			`type` int,
+            `name` tinytext,
+            `flds` text,
+            `vls` text,
+            `date` date,
+            `time` time
         )".$charset;
 
 
@@ -80,6 +85,25 @@ function forms_drop_tables()
     if (isset($_POST['do_drop']))
     {
             unset ($_POST['do_drop']);
+
+			if (isset($_POST['drop_forms_categories_table']))
+			{
+				debug ("dropping categories table");
+				$cat = new Category();
+				$result = $cat -> drop_table("ksh_forms_categories");
+				$content['result'] .= $result['result'];
+				unset($_POST['drop_forms_categories_table']);
+			}
+			
+			if (isset($_POST['drop_privileges_table']))
+			{
+				debug ("dropping privileges table");
+				$cat = new Privileges();
+				$result = $cat -> drop_table("ksh_forms_privileges");
+				$content['result'] .= $result['result'];
+				unset($_POST['drop_privileges_table']);
+			}
+
             foreach ($_POST as $k => $v) exec_query ("DROP TABLE ".mysql_real_escape_string($v));
             $content['result'] .= "Таблицы БД успешно удалены";
     }
@@ -106,16 +130,7 @@ function forms_update_tables()
     $queries = array();
 
     // $queries[] = ""; // Write your SQL queries here
-	/*
-    $queries[] = "ALTER TABLE ksh_forms_submitted ADD date date";
-    $queries[] = "ALTER TABLE ksh_forms_submitted ADD time time";
-	$queries[] = "ALTER TABLE ksh_forms_submitted ADD type int";
-	$queries[] = "UPDATE ksh_forms_submitted SET type = '1' WHERE name='pan_project'";
-	$queries[] = "UPDATE ksh_forms_submitted SET type = '2' WHERE name='project_info'";
-	$queries[] = "UPDATE ksh_forms_submitted SET type = '3' WHERE name='catalogue'";
-	$queries[] = "UPDATE ksh_forms_submitted SET type = '4' WHERE name='brus_project'";
-	$queries[] = "ALTER TABLE ksh_forms ADD title tinytext";
-	*/
+
 
 	if ("yes" == $config['db']['old_engine'])
 	{
@@ -128,27 +143,29 @@ function forms_update_tables()
 		$charset = " charset='utf8'";
 	}
 
-	$tables = array();
-	$sql_query = "SHOW TABLES";
-	$result = exec_query($sql_query);
-	while ($row = mysql_fetch_array($result))
-		$tables[] = stripslashes($row['Tables_in_'.$db_name]);
-	mysql_free_result($result);
+	$tables = db_tables_list();
 
 	debug("tables:", 2);
 	dump($tables);
 
 	if (!in_array("ksh_forms_categories", $tables))
-		$queries[] = "create table if not exists ksh_forms_categories (
-                id int auto_increment primary key,
-                name tinytext,
-				title tinytext
-        )".$charset;
+	{
+		$cat = new Category();
+		$result = $cat -> create_table("ksh_forms_categories");
+		$content['result'] .= $result['result'];
+	}
 
 	if (!in_array("ksh_forms_privileges", $tables))
 	{
 		$priv = new Privileges();
-		$priv -> create_table("ksh_forms_privileges");
+		$result = $priv -> create_table("ksh_forms_privileges");
+		$content['result'] .= $result['result'];
+	}
+
+	if (!in_array("ksh_forms_access", $tables))
+	{
+		$acc = new Access();
+		$result = $acc -> create_table("ksh_forms_access");
 		$content['result'] .= $result['result'];
 	}
 
