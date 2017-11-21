@@ -16,10 +16,19 @@ function forms_frontpage()
 {
         debug ("*** forms_frontpage ***");
         global $config;
+		global $user;
         $content = array(
         	'content' => ''
         );
         $content['content'] = "";
+
+		$priv = new Privileges();
+		if ($priv -> has("forms", "admin", "write"))
+			$content['show_admin_link'] = "yes";
+		else if (1 == $user['id'])
+			$content['show_install_link'] = "yes";
+
+
         debug ("*** end: forms_frontpage ***");
         return $content;
 }
@@ -77,7 +86,10 @@ function forms_default_action()
 	else switch ($action)
 	{
         default:
-			$content .= gen_content("forms", "frontpage", forms_frontpage());
+			if (!$user['id'])
+				$content .= gen_content("auth", "show_login_form", auth_show_login_form());
+			else
+				$content .= gen_content("forms", "frontpage", forms_frontpage());
 		break;
 
 		case "categories_view_adm":
